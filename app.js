@@ -1,10 +1,12 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const cors = require('cors');
 require('dotenv').config();
 
 //reference of express module
 const app = express();
 
+app.use(cors());
 //parsing the json data
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -25,6 +27,13 @@ db.once('open', () => {
     console.log('> Database is connected successfully...');
 });
 
+app.get('/dev',(req,res) => {
+    const author = {
+        name : 'Zahid',
+        profession : 'Node js Developer'
+    };
+    res.send(author);
+});
 //routes handler
 app.use('/adminAuth', require('./routes/auth/admin_auth'));
 app.use('/agentAuth', require('./routes/auth/agent_auth'));
