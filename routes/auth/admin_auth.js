@@ -75,7 +75,7 @@ router.post('/signin', async (req,res) => {
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) throw Error('Invalid credentials');
     
-        const token = jwt.sign({ id: user._id }, process.env.jwt_secret, { expiresIn: 3600 });
+        const token = jwt.sign({ id: user._id, email: user.email, type: user.type}, process.env.jwt_secret, { expiresIn: 3600 });
         if (!token) throw Error('Couldnt sign the token');
         
         res.send({success: true, message: `Admin user ${user.name} is logged in..`})

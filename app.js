@@ -29,5 +29,8 @@ db.once('open', () => {
 app.use('/adminAuth', require('./routes/auth/admin_auth'));
 app.use('/agentAuth', require('./routes/auth/agent_auth'));
 
+app.use('/adminAction', require('./routes/admin/admin_action'));
+
+
 const port = process.env.PORT || 5000;
 app.listen(port, () => console.log(`> Server listening on port ${port}..`));
