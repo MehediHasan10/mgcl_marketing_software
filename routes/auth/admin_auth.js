@@ -56,7 +56,6 @@ router.post('/signup', async (req,res) => {
     }
 });
 
-
 //@POST  - /signin
 //Admin Login
 router.post('/signin', async (req,res) => {

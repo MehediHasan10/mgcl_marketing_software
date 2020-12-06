@@ -14,7 +14,7 @@ app.use(express.urlencoded({ extended: true }));
 //mongo config and connection
 mongoose.connect(process.env.database_url , {
     useNewUrlParser: true,
-    useFindAndModify: true,
+    useFindAndModify: false,
     useUnifiedTopology: true,
     useCreateIndex: true
 }).catch((err) => console.log(err)); //Handles initial connection error
