@@ -1,5 +1,5 @@
 const { model, Schema } = require('mongoose');
-const {isEmail} = require('validator');
+const { isEmail } = require('validator');
 
 //Admin model constructor
 const AdminSchema = new Schema({ 
