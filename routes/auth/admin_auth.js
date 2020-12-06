@@ -78,7 +78,7 @@ router.post('/signin', async (req,res) => {
         const token = jwt.sign({ id: user._id, email: user.email, type: user.type}, process.env.jwt_secret, { expiresIn: 3600 });
         if (!token) throw Error('Couldnt sign the token');
         
-        res.send({success: true, message: `Admin user ${user.name} is logged in..`})
+        res.send({success: true, token: token , message: `Admin user ${user.name} is logged in..`})
     } catch (error) {
         res.send({ success: false, message: error.message })
     }
