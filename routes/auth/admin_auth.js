@@ -6,7 +6,8 @@ require('dotenv').config();
 const Admin = require('../../schema/auth_schema/admin_model');
 
 //@POST - /signup
-router.post('/signup', (req,res) => {
+//Admin Registration
+router.post('/signup', async (req,res) => {
     const { name, email, password } = req.body;
 
     // Simple validation
@@ -15,58 +16,50 @@ router.post('/signup', (req,res) => {
     };
 
     //check for existing user
-    Admin.findOne({ email })
-        .then((user) => {
-            if (user) return res.status(400).json({
-                message: 'Admin User already exists'
-            });
+    try {
+        const user = await Admin.findOne({ email });        
+        if (user) throw Error('User already exists');
 
-            
-            const newAdmin = new Admin({
-                name,
-                email,
-                password
-            });
+        //Create salt & hash
+        const salt = await bcrypt.genSalt(10);
+        if (!salt) throw Error('Something went wrong with bcrypt');
+        
+        const hash = await bcrypt.hash(password, salt);
+        if (!hash) throw Error('Something went wrong hashing the password');
 
-            //Create salt & hash
-            bcrypt.genSalt(10, (err, salt) => {
-                    bcrypt.hash(newAdmin.password, salt, (err, hash) => {
-                        if (err) throw err;
-                        
-                        newAdmin.password = hash;
-                        newAdmin.save()
-                            .then((user) => {
-
-                                jwt.sign(
-                                    {id: user.id},
-                                    process.env.jwt_secret,
-                                    {expiresIn: 3600},
-                                    (err, token) => {
-                                        if (err) throw err;
-                                        
-                                        res.json({
-                                            token,
-                                            userAdmin: {
-                                                id: user.id,
-                                                name: user.name,
-                                                email: user.email
-                                            }
-                                        });
-                                        
-                                    }
-                                )
-                                
-                            });
-                        
-                    });
-                });
-            
+        const newAdmin = new Admin({
+            name,
+            email,
+            password: hash 
         });
+
+        const savedAdmin = await newAdmin.save();
+        if (!savedAdmin) throw Error('Something went wrong saving the user');
+        
+        const token = jwt.sign({ id: savedAdmin._id }, process.env.jwt_secret, {
+            expiresIn: 3600
+        });
+
+        // res.status(200).json({
+        //     token,
+        //     user: {
+        //       id: savedAdmin.id,
+        //       name: savedAdmin.name,
+        //       email: savedAdmin.email
+        //     }
+        // });     
+
+        res.send({success: true, message: `New Admin user ${savedAdmin.name} is created`})
+        
+    } catch (err) {
+        res.status(400).json({ error : err.message})
+    }
 });
 
 
 //@POST  - /signin
-router.post('/signin', (req,res) => {
+//Admin Login
+router.post('/signin', async (req,res) => {
     const { email, password } = req.body;
 
     // Simple validation
@@ -74,43 +67,30 @@ router.post('/signin', (req,res) => {
         return res.status(400).json({ message : 'Please enter all fields' });
     };
 
-    //check for existing user
-    Admin.findOne({ email })
-        .then((user) => {
-            if (!user) return res.status(400).json({
-                message: 'Admin User doesnot exists'
-            });
-
-            
-            //Validate password
-            bcrypt.compare(password, user.password)
-                .then(isMatch => {
-                    if (!isMatch) return res.status(400).json({ message: 'Invalid Cred'});
-                    
-                    jwt.sign(
-                        {id: user.id},
-                        process.env.jwt_secret,
-                        {expiresIn: 3600},
-                        (err, token) => {
-                            if (err) throw err;
-                            
-                            res.json({
-                                token,
-                                userAdmin: {
-                                    id: user.id,
-                                    name: user.name,
-                                    email: user.email
-                                }
-                            });
-                            
-                        }
-                    )                    
-
-                }); 
-            
-
-
-        });
-})
+    try {
+        // Check for existing user
+        const user = await Admin.findOne({ email });
+        if (!user) throw Error('Admin user does not exist');
+    
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) throw Error('Invalid credentials');
+    
+        const token = jwt.sign({ id: user._id }, process.env.jwt_secret, { expiresIn: 3600 });
+        if (!token) throw Error('Couldnt sign the token');
+    
+        // res.status(200).json({
+        //   token,
+        //   user: {
+        //     id: user._id,
+        //     name: user.name,
+        //     email: user.email
+        //   }
+        // });
+        
+        res.send({success: true, message: `Admin user ${user.name} is logged in..`})
+      } catch (err) {
+        res.status(400).json({ message: err.message });
+      }
+    });
 
 module.exports = router;

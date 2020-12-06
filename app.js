@@ -10,8 +10,6 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 //mongo config and connection
-// const url = "mongodb+srv://el06:test1234@cluster0.a9rlb.mongodb.net/mgcl_marketing";
-// const url = "mongodb://localhost:27017/mgcl_marketing";
 mongoose.connect(process.env.database_url , {
     useNewUrlParser: true,
     useFindAndModify: true,

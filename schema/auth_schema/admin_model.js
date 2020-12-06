@@ -18,7 +18,11 @@ const AdminSchema = new Schema({
         type: String,
         required: [true, 'Please, provide a password.'],
         minlength: [8, 'Minimum length of the password is 8.'] 
-    },    
+    }, 
+    type: {
+        type: String,
+        default: "admin"
+    }   
 });
 
 module.exports = model('admin', AdminSchema);
