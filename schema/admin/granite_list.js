@@ -20,4 +20,4 @@ const GraniteListSchema = new Schema({
     }
 });
 
-module.exports = model('granitelist', GraniteListSchema);
+module.exports = model('granite_list', GraniteListSchema);

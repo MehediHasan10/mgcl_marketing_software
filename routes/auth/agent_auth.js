@@ -42,7 +42,7 @@ router.post('/signup', async (req,res) => {
             expiresIn: 3600
         });
 
-        res.send({success: true, message: `New Admin user ${savedAgent.name} is created`})
+        res.send({success: true, message: `New Agent user ${savedAgent.name} is created`})
         
     } catch (error) {
         res.send({ success: false, message: error.message });
