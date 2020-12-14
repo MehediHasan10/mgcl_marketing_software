@@ -27,6 +27,7 @@ db.once('open', () => {
     console.log('> Database is connected successfully...');
 });
 
+// ???????????????????
 app.get('/dev',(req,res) => {
     const author = {
         name : 'Zahid',
@@ -34,6 +35,7 @@ app.get('/dev',(req,res) => {
     };
     res.send(author);
 });
+
 //routes handler
 app.use('/adminAuth', require('./routes/auth/admin_auth'));
 app.use('/agentAuth', require('./routes/auth/agent_auth'));
